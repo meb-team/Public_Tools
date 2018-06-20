@@ -1,13 +1,5 @@
 ## circular_detection
 
-### contents:
-
-* [usage](https://github.com/meb-team/Tools/tree/master/circular_detection#usage)
-* [description](https://github.com/meb-team/Tools/tree/master/circular_detection#description)
-* [options](https://github.com/meb-team/Tools/tree/master/circular_detection#options)
-* [bugs](https://github.com/meb-team/Tools/tree/master/circular_detection#bugs)
-* [citation](https://github.com/meb-team/Tools/tree/master/circular_detection#citation)
-
 ### usage:
 
 ```bash
