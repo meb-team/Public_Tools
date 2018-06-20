@@ -2,11 +2,11 @@
 
 ### contents:
 
-*[usage]()
-*[description]()
-*[options]()
-*[bugs]()
-*[citation]()
+* [usage](https://github.com/meb-team/Tools/tree/master/circular_detection#usage)
+* [description](https://github.com/meb-team/Tools/tree/master/circular_detection#description)
+* [options](https://github.com/meb-team/Tools/tree/master/circular_detection#options)
+* [bugs](https://github.com/meb-team/Tools/tree/master/circular_detection#bugs)
+* [citation](https://github.com/meb-team/Tools/tree/master/circular_detection#citation)
 
 ### usage:
 
@@ -36,4 +36,3 @@ This script detect circular sequence by looking for exact identical k-mer at the
 ### citation
 
 Written by Corentin Hochart (corentin.hochart@uca.fr), UMR CNRSS 6023 Laboratoire Genome et Environement (LMGE). Released under the terms of the GNU General Public License v3. preprocess version v0.1.0.
-- 
