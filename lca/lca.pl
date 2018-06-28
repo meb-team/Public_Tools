@@ -45,7 +45,7 @@ Input:
 
 Ouptut:
 
-    -lca,           Output file with the result of the LCA.
+    --lca,           Output file with the result of the LCA.
 
     -a,             Output file with the abundance of each lineage. 
 
