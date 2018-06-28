@@ -25,6 +25,7 @@ perl detect.circular.seqpl [--fasta] [--kmer] [--cadre] > output.fasta
 =head1 DESCRIPTION
 
 This script detect circular contigs by looking for exact identical k-mer at the two ends on a cadre sequence of the sequences prodvide in fasta file. In order to be able to predict genes spanning the orgin of circular contigs, the first 1,000 nucleotides of each circular contigs are dulicated and added at the contig's end. 
+The output will contain all input sequences. Circularisation note will be include in the header for sequences identified as circular.
 
 =head1 OPTIONS
 
@@ -32,7 +33,7 @@ This script detect circular contigs by looking for exact identical k-mer at the 
 
 --Verbose[no-Verbose]|verbose[no-verbose]|v[no-v], boolean option to print out warnings during execution. Warnings and errors are redirected to STDERR. Defaults to no verbose (silent mode).
 
---fasta|Fasta|f, sequence fasta file
+--fasta|Fasta|f, sequence fasta file (one-line fasta)
 
 --kmer|Kmer|k, motif length detected to identify circular sequence (default: 10)
 
@@ -47,12 +48,7 @@ Inspired by ROUX Simon work for Metavir2 (2014).
 
 =head1 VERSION
 
-V0.1.0
-
-=head1 DATE
-
-Creation : 15/06/2015
-Last modification : 30/08/2016
+v0.1.0
 
 =cut
 
@@ -65,9 +61,9 @@ use Pod::Usage;
 use POSIX;
 
 #scalars
-my $help; 	# help flag
-my $verbose;	# debugging flag
-my $counter = 0; #counter for file name in file verification fonction
+my $help; 	        # help flag
+my $verbose;	    # debugging flag
+my $counter = 0;    # counter for file name in file verification fonction
 my $fastaFile="";
 my $kmerl=10;
 my $CADRE=0;
@@ -119,8 +115,6 @@ unless (-e $fastaFile){&error("Could not find $fastaFile")}
 unless ($kmerl =~ m/\d+/){&error("$kmerl : need an appropriate value for kmer option!")};
 unless ($CADRE =~ m/\d+/){&error("$CADRE : need an appropriate value for cadre option!")};
 
-
-
 open (FASTA, "$fastaFile") or die ("Could not open $fastaFile : $!");
 while (my $line = <FASTA>){
     chomp $line ;
@@ -144,31 +138,31 @@ while (my $line = <FASTA>){
         }
         $end = reverse($end);
         my @end = split(//,$end);
-        my $statue="NOP";
+        my $statue="False";
         my @endlimit;
         my $endlimit;
         my $k = 0 ;
         while ($end =~ m/$begin/g){
             my $pos = pos($end);
-            $statue = "OK";
+            $statue = "True";
             $endlimit[$k] = $pos ;
             $k++;
         }
-        if ($statue eq "OK"){
+        if ($statue eq "True"){
             for (my $j=0 ; $j < scalar(@endlimit) ; $j++){
                 my $scale = scalar(@line) - $endlimit[$j] ;
                 for (my $i = 0 ; $i < $scale; $i++){
                     my $k = $i + $endlimit[$j];
                     unless ($line[$i] eq $line[$k]){
-                        $statue = "NOP";
+                        $statue = "False";
                     }
-                    else {$statue = "OK"}
+                    else {$statue = "True"}
                 }
                 $endlimit = scalar(@line) - $endlimit[$j];
-                if ($statue eq"OK"){last}
+                if ($statue eq "True"){last}
             }
         }
-        if ($statue eq "OK"){
+        if ($statue eq "True"){
             my @seq = @line;
             for (my $k=0 ; $k<$endlimit ; $k++ ){
                 pop (@line);
@@ -184,7 +178,7 @@ while (my $line = <FASTA>){
                 push @line, $nuc1000;
             }
             my $seq = join("",@line);
-            print "$header-circ\n";
+            print "$header # circular\n";
             print $seq,"\n";
         }
         else {
