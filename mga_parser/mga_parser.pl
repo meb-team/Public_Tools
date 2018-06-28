@@ -24,38 +24,40 @@
 =head1 DESCRIPTION
 
     This script automatically predict gene/protein from a fasta file withe MetaGeneAnnotator predictor tool
-    (Hideki Noguchi, Takeaki Taniguchi and Takehiko Itoh, DNA Research, 2008).
-    The name of the fasta file is use in this script and present in output file. If you want to use MEnTALI 
-    pipeline for different sample, please give specify a diffrent name for each sample. 
- 
+    (Hideki Noguchi, Takeaki Taniguchi and Takehiko Itoh, DNA Research, 2008). 
 
 =head1 OPTIONS
-    
---Help|help|h, produces this help file.    
 
---Verbose[no-Verbose]|verbose[no-verbose]|v[no-v]
-boolean option to print out warnings during execution. 
-Warnings and errors are redirected to STDERR.
-Defaults to no verbose (silent mode).
+Global : 
 
---force /!\ force the script by ERASED early project. 
+	--Help|help|h, produces this help file.    
 
--i, nucleotid fasta file as input.
+	--Verbose[no-Verbose]|verbose[no-verbose]|v[no-v]
+	boolean option to print out warnings during execution. 
+	Warnings and errors are redirected to STDERR.
+	Defaults to no verbose (silent mode).
 
---procedure [m|s]	
-	Multi or Single species option in MetageneAnnotator. 
-	Meta or single parameter for -p parameter in prodigal.
-	(default 'm') 
+	-f, --force, force the script by ERASED early project. 
 
---mga, call existing mga file for nucleotid fasta file (-i).
+Mandatory :
 
---nt, output predicted gene in fasta format.
+	-i, --input, nucleotid fasta file as input.
 
---aa, output predicted protein in fasta format.
+Optional :
 
---gff, output predicted gene in gff format.
+	--procedure [m|s]	
+		Multi or Single species option in MetageneAnnotator. 
+		Meta or single parameter for -p parameter in prodigal (default 'm').
 
---tsv, output predicted protein and gene in tabular format. 
+	--mga, call existing mga file for nucleotid fasta file (-i).
+
+	--nt, output predicted gene in fasta format.
+
+	--aa, output predicted protein in fasta format.
+
+	--gff, output predicted gene in gff format.
+
+	--tsv, output predicted protein and gene in tabular format. 
 
 
 =head1 AUTHORS
@@ -90,7 +92,7 @@ my $verbose;	# debugging flag
 my $exe = $FindBin::RealScript; # executable path
 my $gff_factory = Bio::Tools::GFF->new(-gff_version=>3); # gff version to use 
 my $version; # version flag
-my $VERSION="0.3"; # script version
+my $VERSION="0.1.0"; # script version
 my $force; # force flag
 my $date=date(); # date 
 
@@ -195,7 +197,7 @@ MAIN: {
 		"Help|help|h" 			=> \$help,		#help flag
 		"Verbose|verbose|v!" 	=> \$verbose,	#verbose flag
 		"version!"				=> \$version,	#version flag
-		"force!"				=> \$force,		#force flag
+		"f|force!"				=> \$force,		#force flag
 		
 		"i|input=s"	 			=> \$input_fasta,	#input file in fasta format.
 		"procedure=s"			=> \$procedure,		#prediction procedure for mga.
