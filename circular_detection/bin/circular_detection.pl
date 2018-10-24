@@ -4,7 +4,11 @@
 # This script detect circular contigs by looking for exact identical k-mer at the two   #
 # ends on a cadre sequence of the sequences prodvide in fasta file.                     #
 #########################################################################################
-
+#                                                                                       #
+# This program is free software: you can redistribute it and/or modify it under the     #
+# terms of the GNU General Public License as published by the Free Software Foundation, #
+# either version 3 of the License, or (at your option) any later version.               #
+#                                                                                       #
 #########################################################################################
 ## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, ##
 ## INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A       ##
@@ -39,6 +43,8 @@ The output will contain all input sequences. Circularisation note will be includ
 
 --cadre|Cadre|c, length of the inspect fragment at the sequence 5' end for  kmer identity finding. If 0 screen all the sequence. Default: 0.
 
+--only_circular, print only assemled sequences detect as circular. 
+
 
 =head1 AUTHORS
 
@@ -64,6 +70,7 @@ use POSIX;
 my $help; 	        # help flag
 my $verbose;	    # debugging flag
 my $counter = 0;    # counter for file name in file verification fonction
+my $only_circular;  # circular printing flag
 my $fastaFile="";
 my $kmerl=10;
 my $CADRE=0;
@@ -95,6 +102,13 @@ sub warning {
     }
 }
 
+sub fasta_format {
+    my $seq=shift;
+    $seq=~s/(.{60})/$1\n/g;
+    chomp $seq;
+    return $seq;
+}
+
 MAIN: {
     GetOptions(
             "Help|help|h" => \$help,
@@ -102,6 +116,7 @@ MAIN: {
             "fasta|Fasta|f=s" => \$fastaFile,
             "kmer|Kmer|k=s" => \$kmerl,
             "cadre|Cadre|c=s" => \$CADRE,
+            "only_circular!" => \$only_circular
         );
 
     &warning("Start of script.");
@@ -149,17 +164,18 @@ while (my $line = <FASTA>){
             $k++;
         }
         if ($statue eq "True"){
-            for (my $j=0 ; $j < scalar(@endlimit) ; $j++){
+            for (my $j=0 ; $j <= $#endlimit ; $j++){
                 my $scale = scalar(@line) - $endlimit[$j] ;
                 for (my $i = 0 ; $i < $scale; $i++){
                     my $k = $i + $endlimit[$j];
                     unless ($line[$i] eq $line[$k]){
                         $statue = "False";
+                        $i = $scale 
                     }
                     else {$statue = "True"}
                 }
                 $endlimit = scalar(@line) - $endlimit[$j];
-                if ($statue eq "True"){last}
+                # if ($statue eq "True"){last}
             }
         }
         if ($statue eq "True"){
@@ -179,12 +195,12 @@ while (my $line = <FASTA>){
             }
             my $seq = join("",@line);
             print "$header # circular\n";
-            print $seq,"\n";
+            print fasta_format($seq),"\n";
         }
-        else {
+        elsif (! $only_circular) {
             my $seq = join("",@line);
             print $header,"\n";
-            print $seq,"\n";
+            print fasta_format($seq),"\n";
         }
     }
 }
