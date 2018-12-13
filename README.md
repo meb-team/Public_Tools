@@ -11,4 +11,6 @@ Short pipelines and codes shared produce by MEB Team.
   * [lca]()
 * [M]()
   * [mga_parser]()
+* [R]()
+  * [rna_hmm]()
   

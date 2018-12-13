@@ -3,7 +3,11 @@
 ########################################################################################
 # MetaGeneAnnotator wrapper. Produce gff, tsv, nt and/or aa output                     #
 ########################################################################################
-
+#                                                                                       #
+# This program is free software: you can redistribute it and/or modify it under the     #
+# terms of the GNU General Public License as published by the Free Software Foundation, #
+# either version 3 of the License, or (at your option) any later version.               #
+#                                                                                       #
 #########################################################################################
 ## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, ##
 ## INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A       ##

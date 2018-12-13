@@ -12,7 +12,7 @@ This script detect circular sequence by looking for exact identical k-mer at the
 
 ### options: 
 
-```bash
+```
 -h, --help	produces the help file
 -v, --verbose	boolean option to print out warnings during execution. Warnings and errors are redirected to STDERR. Defaults to no verbose (silent mode).
 -f, --fasta	sequence fasta file
