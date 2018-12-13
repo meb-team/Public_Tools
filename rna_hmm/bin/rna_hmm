@@ -23,7 +23,7 @@
 
 =head1 SYNOPSIS
 
-    perl rna_hmm.pl [-i input_file] 
+    perl rna_hmm [-i input_file] 
 
 =head1 DESCRIPTION
 
