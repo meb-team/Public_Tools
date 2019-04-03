@@ -12,7 +12,7 @@ This script automatically predict gene/protein from a fasta file with [MetaGeneA
 
 ### options: 
 
-```bash
+```
 -h, --help	produces the help file
 -v, --verbose	boolean option to print out warnings during execution. Warnings and errors are redirected to STDERR. Defaults to no verbose (silent mode).
 -f, --force, force the script by ERASED early project. 
