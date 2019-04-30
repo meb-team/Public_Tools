@@ -646,14 +646,6 @@ foreach(@hmm_resu){
 
 
 &warning("Create rDNA positions file.");
-#~ open(GFF,">$output_name.gff");
-#~ print GFF "##gff-version
-#~ ##source-version rna_hmm.pl
-#~ ##date $date->{date}
-#~ ##Type DNA\n";
-#~ print GFF join ("\t",'##seq_name','method','feature','start','end','score','strand','frame','gene',"\n");
-#~ print "#---------------------------------------------------------------------------------------------------------\n";
-
 my $gff_header="##gff-version
 ##source-version rna_hmm.pl
 ##date $date->{date}
@@ -677,6 +669,7 @@ for my $row (sort { gff_sort } @feat) {
         select $fh2;
     }
     print join("\t", @$row),"\n";
+    close $fh2 if ($gff_output);
     
     if($fasta){
         unless($last){$last=@$row[0]};
@@ -700,7 +693,6 @@ for my $row (sort { gff_sort } @feat) {
         $last=@$row[0];
     }
 }
-#~ close $fh2 if ($gff_output);
 clean_up("$tmp_fasta");
 &warning("End of script.");
 
