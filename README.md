@@ -6,11 +6,12 @@ Short pipelines and codes shared produce by MEB Team.
 ## Overview 
 
 * [C]()
-  * [circular_detection]()
+  * [circular_detection](https://github.com/meb-team/Tools/tree/master/circular_detection)
 * [L]()
-  * [lca]()
+  * [lca](https://github.com/meb-team/Tools/tree/master/lca)
 * [M]()
-  * [mga_parser]()
+  * [MAMa](https://github.com/meb-team/Tools/tree/master/mama)
+  * [mga_parser](https://github.com/meb-team/Tools/tree/master/mga_parser)
 * [R]()
-  * [rna_hmm]()
+  * [rna_hmm](https://github.com/meb-team/Tools/tree/master/rna_hmm)
   
