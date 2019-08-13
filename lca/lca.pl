@@ -170,7 +170,7 @@ while (my $line = <TAXO>){
     my $contig = '' ;
     $contig = join('|',@contig) if $d eq 'pipe';
     $contig = join('.',@contig) if $d eq 'dot';
-    $contig= join('.',@contig) if $d eq 'underscore';        
+    $contig= join('_',@contig) if $d eq 'underscore';
     if ($line[1]){
         unless(exists $lca{$contig}){$lca{$contig}=$line[1]; $DoOrNot="do"}
         else{
