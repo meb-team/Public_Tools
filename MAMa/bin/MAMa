@@ -1,0 +1,154 @@
+#! /usr/bin/env python 
+# -*- coding: utf-8 -*-
+# v0.1.0
+#########################################################################################
+# Constrcut abundance matrices from a list of bam files                                 #
+#########################################################################################
+#                                                                                       #
+# This program is free software: you can redistribute it and/or modify it under the     #
+# terms of the GNU General Public License as published by the Free Software Foundation, #
+# either version 3 of the License, or (at your option) any later version.               #
+#                                                                                       #
+#########################################################################################
+## THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, ##
+## INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A       ##
+## PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT  ##
+## HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION   ##
+## OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE      ##
+## SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                              ##
+#########################################################################################
+
+import os
+import sys
+
+import argparse
+import inspect
+
+from biolib.common import make_sure_path_exists
+from biolib.logger import logger_setup
+from biolib.misc.custom_help_formatter import CustomHelpFormatter
+
+dir_module = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+if dir_module not in sys.path:
+    sys.path.insert(0, dir_module)
+
+from mama.main import OptionsParser
+
+def print_help():
+    """Help function"""
+
+    print ('')
+    print ('            ...::: MAMa v' + version() + ' :::...')
+    print ('''\
+
+    Available commands: 
+        features            -> making bam features matrix 
+        annotate_features   -> making annoted features abundance matrix 
+        mama_wf             -> making bam features and annoted features abundance matrix 
+
+
+Use: MAMa <command> -h for command specific help. 
+
+Feature requests or bug reports can be sent to Corentin Hochart (corentin.hochart.pro@gmail.com)
+    or posted on GitHub (https://github.com/meb-team/Tools/).
+    ''')
+
+
+def version():
+    import mama
+    versionFile = open(os.path.join(mama.__path__[0], 'VERSION'))
+    return versionFile.readline().strip()
+
+
+if __name__ == '__main__':
+
+    # initialize the option parser
+    parser = argparse.ArgumentParser(add_help=False,
+        description="This script allow the construction of abundance" +
+        "matrix from a list of bam file.",
+        epilog="Written by Corentin Hochart (corentin.hochart.pro@gmail.com), " +
+        "UMR CNRSS 6023 Laboratoire Genome et Environement (LMGE). " +
+        "Released under the terms of the GNU General Public License v3. " +
+        "MAMa version %s." % version())
+    subparsers = parser.add_subparsers(help="--", dest='subparser_name')
+
+    # pathway reconstruction 
+    features_parser = subparsers.add_parser('features',
+                                            description='') 
+    features_parser.add_argument('faidx',help='samtools fasta index of the reference')
+    features_parser.add_argument('bam_list',help='list of bam format alignement file(s) path')
+    features_parser.add_argument('output_dir',help='directory to write output files')
+    features_input_argument = features_parser.add_argument_group('optional input arguments')
+    features_input_argument.add_argument('-x','--extension', help='bam file prefix',default='bam')
+    features_input_argument.add_argument('-t','--threads', help='threads number for "samtools view"',default='2')
+    features_input_argument.add_argument('-Q','--mapQ',help='only include reads with mapping quality >= INT [10]',default='10')
+    features_input_argument.add_argument('-i','--id_cutoff',help='only include reads with identity >= INT [0]',default=0)
+    features_output_argument = features_parser.add_argument_group('optional output arguments')
+    features_output_argument.add_argument('-f','--feature_normalisation',help="get the numer of features per X reads [Default: 1000000]",default=1000000,type=int)
+    features_output_argument.add_argument('-g','--discard_gene_length_normalisation',help="discard gene length normalisation for base count abundance output",action='store_true')
+    features_output_argument.add_argument('--removed',help="removed features who do not appears in samples (sum of abundance through sample = 0)",action='store_true')
+    features_parser.add_argument('--silent', help='suppress output of logger', action='store_true')
+    features_parser.add_argument('--force_overwrite', help='force overwriting of output directory', action="store_true", default=False)
+    features_parser.add_argument('--version',help='print version and exit',action='version',version='MAMa '+ version())
+
+
+    annoted_features_parser = subparsers.add_parser('annoted_features',
+                                            description='')
+    annoted_features_parser.add_argument('features_dir',help='directory specified during features command')
+    annoted_features_parser.add_argument('features_annotation',help='features annotation file in tabular format')
+    annoted_features_parser.add_argument('annotation_description',help='annotation description file in tabular format')
+    annoted_features_input_argument = annoted_features_parser.add_argument_group('optional input arguments')
+    annoted_features_input_argument.add_argument('--library_size', help="Tabular file with sample library size to produce normalised count matrix")
+    annoted_features_output_argument = annoted_features_parser.add_argument_group('optional output arguments')
+    annoted_features_output_argument.add_argument('-f','--feature_normalisation',help="get the numer of features per X reads [Default: 1000000]",default=1000000,type=int)
+    annoted_features_output_argument.add_argument('--removed',help="removed features who do not appears in samples (sum of abundance through sample = 0)",action='store_true')                                            
+    
+    annoted_features_parser.add_argument('--silent', help='suppress output of logger', action='store_true')
+    annoted_features_parser.add_argument('--force_overwrite', help='force overwriting of output directory', action="store_true", default=False)
+
+    mama_wf_parser = subparsers.add_parser('mama_wf',
+                                            description='Run features and annotate_features command',
+                                            epilog='MAMa mama_wf ./file.fai ./bam_list.tsv ./features2annotation.tsv ./annotationDescription.tsv ./output')
+    mama_wf_parser.add_argument('faidx',help='samtools fasta index of the reference')
+    mama_wf_parser.add_argument('bam_list',help='list of bam format alignement file(s) path ')
+    mama_wf_parser.add_argument('features_annotation',help='features annotation file in tabular format')
+    mama_wf_parser.add_argument('annotation_description',help='annotation description file in tabular format')
+    mama_wf_parser.add_argument('output_dir',help='directory to write output files')
+    mama_wf_input_argument = mama_wf_parser.add_argument_group('optional input arguments')
+    mama_wf_input_argument.add_argument('-x','--extension', help='bam file prefix',default='bam')
+    mama_wf_input_argument.add_argument('-t','--threads', help='threads number for "samtools view"',default='2')
+    mama_wf_input_argument.add_argument('-Q','--mapQ',help='only include reads with mapping quality >= INT [10]',default='10')
+    mama_wf_input_argument.add_argument('-i','--id_cutoff',help='only include reads with identity >= INT [0]',default=0)
+    mama_wf_output_argument = mama_wf_parser.add_argument_group('optional output arguments')
+    mama_wf_output_argument.add_argument('-f','--feature_normalisation',help="get the numer of features per X reads [Default: 1000000]",default=1000000,type=int)
+    mama_wf_output_argument.add_argument('-g','--discard_gene_length_normalisation',help="discard gene length normalisation for base count abundance output",action='store_true')
+    mama_wf_output_argument.add_argument('--removed',help="removed features who do not appears in samples (sum of abundance through sample = 0)",action='store_true')
+    mama_wf_parser.add_argument('--silent', help='suppress output of logger', action='store_true')
+    mama_wf_parser.add_argument('--force_overwrite', help='force overwriting of output directory', action="store_true", default=False)
+    mama_wf_parser.add_argument('--version',help='print version and exit',action='version',version='MAMa '+ version())
+
+    # get and check options
+    args = None
+    if(len(sys.argv) == 1 or sys.argv[1] == '-h' or sys.argv == '--help'):
+        print_help()
+        sys.exit(0)
+    else:
+        args = parser.parse_args()
+
+    try:
+        logger_setup(args.output_dir, "MAMa.log", "MAMa", version(), args.silent)
+    except:
+        logger_setup(None, "MAMa.log", "MAMa", version(), args.silent)
+
+    try:
+        parser = OptionsParser()
+        if(False):
+            import cProfile
+            cProfile.run('parser.parse_options(args)')
+        else:
+            parser.parse_options(args)
+    except SystemExit:
+        print ('Unrecoverable error.')
+    except:
+        print ("\nUnexpected error:", sys.exc_info()[0])
+        raise
